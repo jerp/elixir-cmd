@@ -1,0 +1,16 @@
+{
+  "name": "elixir-cmd",
+  "main": "./lib/elixir-cmd",
+  "version": "0.0.0",
+  "description": "Elixir Commands integration with atom.io",
+  "repository": "https://github.com/jerp/elixir-cmd",
+  "license": "MIT",
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "dependencies": {
+    "ansi-to-html": ">0.1.0",
+    "underscore": "~1.5.2",
+    "marked": "~0.3.2"
+  }
+}
