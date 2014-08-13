@@ -11,8 +11,9 @@ module.exports =
       @elixirCmdView?.close()
 
   deactivate: ->
-    @elixirCmdView.destroy()
-    atom.workspaceView.off 'core:cancel core:close'
+    if @elixirCmdView
+      @elixirCmdView.destroy()
+      atom.workspaceView.off 'core:cancel core:close'
 
   serialize: ->
-    elixirCmdViewState: @elixirCmdView.serialize()
+    elixirCmdViewState: @elixirCmdView?.serialize()
