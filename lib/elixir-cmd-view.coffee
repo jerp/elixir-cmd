@@ -1,11 +1,29 @@
 {View, BufferedProcess, $$} = require 'atom'
 AnsiFilter = require 'ansi-to-html'
-_ = require 'underscore'
-marked = require 'marked'
 
-elixirModule = /^((?:[A-Z][a-zA-Z]*)(?:\.[A-Z][a-zA-Z]*)*)$/
+elixirModule = /^((?:[A-Z][a-zA-Z0-9_-]*)(?:\.[A-Z][a-zA-Z0-9_-]*)*)$/
 elixirModuleFunction = /^((?:[A-Z][a-zA-Z0-9_-]*)(?:\.[A-Z][a-zA-Z0-9_-]*)*)\.([a-z][a-zA-Z0-9_-]*)$/
 kernelFunction = /^([a-z][a-zA-Z0-9_-]*)/
+
+# Functions for escaping and unescaping strings to/from HTML interpolation.
+# List of HTML entities for escaping.
+escape = (() ->
+  escaping =
+    "&": "&amp;"
+    "<": "&lt;"
+    ">": "&gt;"
+    "\"": "&quot;"
+    "'": "&#x27;"
+    "`": "&#x60;"
+  replacer= (match) -> escaping[match]
+  reString = "(?:" + (for k of escaping then k).join("|") + ")"
+  reTest = RegExp(reString)
+  reMatch = RegExp(reString, "g")
+  return (string) ->
+    string = (if not string? then "" else "" + string)
+    if reTest.test(string)
+      string.replace(reMatch, replacer)
+    else string)()
 
 # Runs a portion of a script through an interpreter and displays it line by line
 module.exports =
@@ -45,20 +63,22 @@ class ElixirCmdView extends View
 
   keywordDocumentation: ->
     return unless (kw=@keywordGet())?
-    args = ['-S', 'mix', '-e']
-    if matches=kw.match elixirModule
-      [_matching, moduleName] = matches
-      @resetView()
-      args.push "require IEx\nApplication.put_env(:iex, :colors, [enabled: true])\nIEx.Introspection.h(#{moduleName})"
-    if matches=kw.match elixirModuleFunction
-      [_matching, moduleName, functionName] = matches
-      @resetView()
-      args.push "require IEx\nApplication.put_env(:iex, :colors, [enabled: true])\nIEx.Introspection.h(#{moduleName}, :#{functionName})"
-    if matches=kw.match kernelFunction
-      [_matching, functionName] = matches
-      @resetView()
-      args.push "require IEx\nApplication.put_env(:iex, :colors, [enabled: true])\nIEx.Introspection.h(Kernel, :#{functionName})"
-    @run 'elixir', args if matches?
+    args = ['-S', 'mix', 'run', '-e']
+    switch
+      when matches=kw.match elixirModule
+        [_matching, moduleName] = matches
+        @resetView()
+        args.push "require IEx\nApplication.put_env(:iex, :colors, [enabled: true])\nIEx.Introspection.h(#{moduleName})"
+      when matches=kw.match elixirModuleFunction
+        [_matching, moduleName, functionName] = matches
+        @resetView()
+        args.push "require IEx\nApplication.put_env(:iex, :colors, [enabled: true])\nIEx.Introspection.h(#{moduleName}, :#{functionName})"
+      when matches=kw.match kernelFunction
+        [_matching, functionName] = matches
+        @resetView()
+        args.push "require IEx\nApplication.put_env(:iex, :colors, [enabled: true])\nIEx.Introspection.h(Kernel, :#{functionName})"
+      else return
+    @run 'elixir', args
 
   keywordGet:  ->
     editor    = atom.workspace.getActiveEditor()
@@ -80,7 +100,7 @@ class ElixirCmdView extends View
     range.start.column = 0
     text = editor.getTextInBufferRange(range)
     validNameChars = /[a-zA-Z]/
-    if start>1 and text.charAt(start-1) == "." and validNameChars.test(text.charAt(start-2))
+    while start>1 and text.charAt(start-1) == "." and validNameChars.test(text.charAt(start-2))
       start-=1
       while start > 0 and validNameChars.test(text.charAt(start-1)) then start-=1
     text.slice(start, range.end.column)
@@ -134,7 +154,7 @@ class ElixirCmdView extends View
     @bufferedProcess.process.on 'error', (nodeError) =>
       @output.append $$ ->
         @h1 'Unable to run'
-        @pre _.escape command
+        @pre escape command
         @h2 'Is it on your path?'
         @pre "PATH: #{_.escape process.env.PATH}"
 
@@ -148,7 +168,7 @@ class ElixirCmdView extends View
       @bufferedProcess.kill()
 
   display: (css, line) ->
-    line = _.escape(line)
+    line = escape(line)
     line = @ansiFilter.toHtml(line)
 
     @output.append $$ ->
