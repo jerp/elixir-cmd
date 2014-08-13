@@ -45,18 +45,20 @@ class ElixirCmdView extends View
 
   keywordDocumentation: ->
     return unless (kw=@keywordGet())?
+    args = ['-S', 'mix', '-e']
     if matches=kw.match elixirModule
       [_matching, moduleName] = matches
       @resetView()
-      @run 'elixir', ['-e', "require IEx\nApplication.put_env(:iex, :colors, [enabled: true])\nIEx.Introspection.h(#{moduleName})"]
+      args.push "require IEx\nApplication.put_env(:iex, :colors, [enabled: true])\nIEx.Introspection.h(#{moduleName})"
     if matches=kw.match elixirModuleFunction
       [_matching, moduleName, functionName] = matches
       @resetView()
-      @run 'elixir', ['-e', "require IEx\nApplication.put_env(:iex, :colors, [enabled: true])\nIEx.Introspection.h(#{moduleName}, :#{functionName})"]
+      args.push 'elixir', ['-e', "require IEx\nApplication.put_env(:iex, :colors, [enabled: true])\nIEx.Introspection.h(#{moduleName}, :#{functionName})"
     if matches=kw.match kernelFunction
       [_matching, functionName] = matches
       @resetView()
-      @run 'elixir', ['-e', "require IEx\nApplication.put_env(:iex, :colors, [enabled: true])\nIEx.Introspection.h(Kernel, :#{functionName})"]
+      args.push 'elixir', ['-e', "require IEx\nApplication.put_env(:iex, :colors, [enabled: true])\nIEx.Introspection.h(Kernel, :#{functionName})"
+    @run 'elixir', args if matches?
 
   keywordGet:  ->
     editor    = atom.workspace.getActiveEditor()
