@@ -53,11 +53,11 @@ class ElixirCmdView extends View
     if matches=kw.match elixirModuleFunction
       [_matching, moduleName, functionName] = matches
       @resetView()
-      args.push 'elixir', ['-e', "require IEx\nApplication.put_env(:iex, :colors, [enabled: true])\nIEx.Introspection.h(#{moduleName}, :#{functionName})"
+      args.push "require IEx\nApplication.put_env(:iex, :colors, [enabled: true])\nIEx.Introspection.h(#{moduleName}, :#{functionName})"
     if matches=kw.match kernelFunction
       [_matching, functionName] = matches
       @resetView()
-      args.push 'elixir', ['-e', "require IEx\nApplication.put_env(:iex, :colors, [enabled: true])\nIEx.Introspection.h(Kernel, :#{functionName})"
+      args.push "require IEx\nApplication.put_env(:iex, :colors, [enabled: true])\nIEx.Introspection.h(Kernel, :#{functionName})"
     @run 'elixir', args if matches?
 
   keywordGet:  ->
