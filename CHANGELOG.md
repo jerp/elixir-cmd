@@ -1,8 +1,8 @@
-## 0.1.3 - First Release minor improvements
+## 0.1.4 - First Release minor improvements
 * small improvements on help (search in local module and deps)
 * remove unnecessary dependencies (cleaner and improve load perfs)
 
-## 0.1.2 - First Release minor fixes
+## 0.1.3 - First Release minor fixes
 * fix a bug preventing in module help
 
 ## 0.1.2 - First Release minor fixes
