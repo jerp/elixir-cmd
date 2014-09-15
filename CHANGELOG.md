@@ -1,4 +1,7 @@
-## 0.1.5 - First Release minor improvements
+## 0.1.7 - Bug Fix
+* fix issue when building or testing with unsaved buffer
+
+## 0.1.5 & 0.1.6
 * fix error message when elixir / mix not found on path
 
 ## 0.1.4 - First Release minor improvements

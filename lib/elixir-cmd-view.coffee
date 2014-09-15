@@ -122,7 +122,7 @@ class ElixirCmdView extends View
     @output.empty()
 
   saveAll: ->
-    atom.project.buffers.forEach (buffer) -> buffer.save() if buffer.isModified()
+    atom.project.buffers.forEach (buffer) -> buffer.save() if buffer.isModified() and buffer.file?
 
   close: ->
     # Stop any running process and dismiss window
