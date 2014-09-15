@@ -156,7 +156,7 @@ class ElixirCmdView extends View
         @h1 'Unable to run'
         @pre escape command
         @h2 'Is it on your path?'
-        @pre "PATH: #{_.escape process.env.PATH}"
+        @pre "PATH: #{escape process.env.PATH}"
 
   getCwd: ->
     atom.project.getPath()
