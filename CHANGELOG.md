@@ -1,3 +1,6 @@
+## 0.1.8 - Improvment
+* Add link to .ex and .exs files in compile and test log
+
 ## 0.1.7 - Bug Fix
 * fix issue when building or testing with unsaved buffer
 

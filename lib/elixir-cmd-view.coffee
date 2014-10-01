@@ -1,9 +1,14 @@
 {View, BufferedProcess, $$} = require 'atom'
 AnsiFilter = require 'ansi-to-html'
+ansiFilter = new AnsiFilter
+fs = require 'fs'
 
 elixirModule = /^((?:[A-Z][a-zA-Z0-9_-]*)(?:\.[A-Z][a-zA-Z0-9_-]*)*)$/
 elixirModuleFunction = /^((?:[A-Z][a-zA-Z0-9_-]*)(?:\.[A-Z][a-zA-Z0-9_-]*)*)\.([a-z][a-zA-Z0-9_-]*)$/
 kernelFunction = /^([a-z][a-zA-Z0-9_-]*)/
+
+filelike = /((?:\w*\/)*\w*\.exs?)(?::(\d+))?\b/
+# syntaxError = /(\*\* \([a-zA-Z]+\) )((?:\w*\/)*\w*\.ex)(?::(\d+))?/
 
 # Functions for escaping and unescaping strings to/from HTML interpolation.
 # List of HTML entities for escaping.
@@ -25,6 +30,11 @@ escape = (() ->
       string.replace(reMatch, replacer)
     else string)()
 
+fileResolve = (filename) ->
+  file = atom.project.resolve(filename)
+  if fs.existsSync(file)
+    return file
+
 # Runs a portion of a script through an interpreter and displays it line by line
 module.exports =
 class ElixirCmdView extends View
@@ -38,7 +48,9 @@ class ElixirCmdView extends View
       css = 'tool-panel panel panel-bottom padding elixir-cmd-view
         native-key-bindings'
       @div class: css, outlet: 'script', tabindex: -1, =>
-        @div class: 'panel-body padded output', outlet: 'output'
+        @div
+          click: 'gotoFile'
+          class: 'panel-body padded output', outlet: 'output'
 
   initialize: (serializeState, @runOptions) ->
     # Bind commands
@@ -47,7 +59,17 @@ class ElixirCmdView extends View
     atom.workspaceView.command 'elixir-cmd:doc', => @keywordDocumentation()
     atom.workspaceView.command 'elixir-cmd:kill-process', => @stop()
 
-    @ansiFilter = new AnsiFilter
+  gotoFile: ({target: target}) ->
+    file = target.getAttribute("file")
+    return unless file
+    line = target.getAttribute("line")
+    fs.exists(file, (exists) ->
+      return unless exists
+      atom.workspace.openSync(file)
+      return unless line
+      editor    = atom.workspace.getActiveEditor()
+      editor.moveToTop(); editor.moveDown(line-1)
+      )
 
   serialize: ->
 
@@ -168,9 +190,25 @@ class ElixirCmdView extends View
       @bufferedProcess.kill()
 
   display: (css, line) ->
-    line = escape(line)
-    line = @ansiFilter.toHtml(line)
-
     @output.append $$ ->
       @pre class: "line #{css}", =>
-        @raw line
+        if filelike.test(line)
+          while true
+            debugger
+            [matchstring, filename, lineno] = line.match(filelike)
+            [before, line] = line.split(matchstring)
+            if filename and (file=fileResolve(filename))
+              @span before
+              @a
+                style: 'color: #428bca;'
+                file: file
+                line: lineno
+                filename + if lineno then ":" + lineno else ""
+            else
+              @span before + matchstring
+            break unless filelike.test(line)
+          @span line if line.length?
+        else
+          line = escape(line)
+          line = ansiFilter.toHtml(line)
+          @raw line
