@@ -1,4 +1,4 @@
-## 0.1.8 - Improvment
+## 0.2.0 - Improvment
 * Add link to .ex and .exs files in compile and test log
 
 ## 0.1.7 - Bug Fix

@@ -7,8 +7,8 @@ elixirModule = /^((?:[A-Z][a-zA-Z0-9_-]*)(?:\.[A-Z][a-zA-Z0-9_-]*)*)$/
 elixirModuleFunction = /^((?:[A-Z][a-zA-Z0-9_-]*)(?:\.[A-Z][a-zA-Z0-9_-]*)*)\.([a-z][a-zA-Z0-9_-]*)$/
 kernelFunction = /^([a-z][a-zA-Z0-9_-]*)/
 
-filelike = /((?:\w*\/)*\w*\.exs?)(?::(\d+))?\b/
-# syntaxError = /(\*\* \([a-zA-Z]+\) )((?:\w*\/)*\w*\.ex)(?::(\d+))?/
+filelike = /((?:\w*\/)*\w*\.exs?(?::\d+))/
+filesplit = /((?:\w*\/)*\w*\.exs?)(?::(\d+))/
 
 # Functions for escaping and unescaping strings to/from HTML interpolation.
 # List of HTML entities for escaping.
@@ -42,9 +42,6 @@ class ElixirCmdView extends View
 
   @content: ->
     @div =>
-#      @subview 'headerView', new HeaderView()
-
-      # Display layout and outlets
       css = 'tool-panel panel panel-bottom padding elixir-cmd-view
         native-key-bindings'
       @div class: css, outlet: 'script', tabindex: -1, =>
@@ -60,16 +57,11 @@ class ElixirCmdView extends View
     atom.workspaceView.command 'elixir-cmd:kill-process', => @stop()
 
   gotoFile: ({target: target}) ->
-    file = target.getAttribute("file")
-    return unless file
-    line = target.getAttribute("line")
-    fs.exists(file, (exists) ->
-      return unless exists
-      atom.workspace.openSync(file)
-      return unless line
-      editor    = atom.workspace.getActiveEditor()
-      editor.moveToTop(); editor.moveDown(line-1)
-      )
+    atom.workspace.openSync target.getAttribute("file")
+    return unless (lineno = target.getAttribute("lineno"))
+    editor = atom.workspace.getActiveEditor()
+    editor.moveToTop()
+    editor.moveDown(lineno-1)
 
   serialize: ->
 
@@ -166,7 +158,8 @@ class ElixirCmdView extends View
 
     stderr = (output) => @display 'stderr', output
     exit = (returnCode) =>
-      console.log "Exited with #{returnCode}"
+      @output.append $$ ->
+        @small "-- exit #{returnCode} --"
 
     # Run process
     @bufferedProcess = new BufferedProcess({
@@ -193,21 +186,21 @@ class ElixirCmdView extends View
     @output.append $$ ->
       @pre class: "line #{css}", =>
         if filelike.test(line)
-          while true
-            debugger
-            [matchstring, filename, lineno] = line.match(filelike)
-            [before, line] = line.split(matchstring)
-            if filename and (file=fileResolve(filename))
-              @span before
-              @a
-                style: 'color: #428bca;'
-                file: file
-                line: lineno
-                filename + if lineno then ":" + lineno else ""
+          debugger
+          bits = line.split(filelike)
+          for bit in bits
+            if matching = bit.match(filesplit)
+              [matchstring, filename, lineno] = matching
+              if filename and (file=fileResolve(filename)) and fs.existsSync(file)
+                @a
+                  style: 'color: #428bca;'
+                  file: file
+                  lineno: lineno if lineno
+                  bit
+              else
+                @span bit
             else
-              @span before + matchstring
-            break unless filelike.test(line)
-          @span line if line.length?
+              @span bit
         else
           line = escape(line)
           line = ansiFilter.toHtml(line)
