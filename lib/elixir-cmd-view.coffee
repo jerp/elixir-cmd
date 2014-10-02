@@ -186,7 +186,6 @@ class ElixirCmdView extends View
     @output.append $$ ->
       @pre class: "line #{css}", =>
         if filelike.test(line)
-          debugger
           bits = line.split(filelike)
           for bit in bits
             if matching = bit.match(filesplit)

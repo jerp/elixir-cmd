@@ -1,3 +1,6 @@
+## 0.2.2 - Fixing typo and commit error
+* fix typo
+
 ## 0.2.0 - Improvment
 * Add link to .ex and .exs files in compile and test log
 
