@@ -57,7 +57,8 @@ class ElixirCmdView extends View
     atom.workspaceView.command 'elixir-cmd:kill-process', => @stop()
 
   gotoFile: ({target: target}) ->
-    atom.workspace.openSync target.getAttribute("file")
+    return unless file=target.getAttribute("file")
+    atom.workspace.openSync file
     return unless (lineno = target.getAttribute("lineno"))
     editor = atom.workspace.getActiveEditor()
     editor.moveToTop()
