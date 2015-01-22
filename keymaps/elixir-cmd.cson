@@ -7,7 +7,7 @@
 
 # For more detailed documentation see
 # https://atom.io/docs/latest/advanced/keymaps
-'.platform-darwin .editor':
+'.platform-darwin .atom-text-editor':
   'shift-cmd-b': 'elixir-cmd:build'
   'shift-cmd-t': 'elixir-cmd:test'
   'shift-ctrl-h': 'elixir-cmd:doc'
