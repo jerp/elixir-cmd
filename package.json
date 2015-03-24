@@ -1,7 +1,7 @@
 {
   "name": "elixir-cmd",
   "main": "./lib/elixir-cmd",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Elixir Commands integration with atom.io",
   "repository": "https://github.com/jerp/elixir-cmd",
   "license": "MIT",
