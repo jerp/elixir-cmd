@@ -1,3 +1,6 @@
+## 0.2.5 - Fixing key binding issue
+* fix key binding issue
+
 ## 0.2.2 - Fixing typo and commit error
 * fix typo
 
