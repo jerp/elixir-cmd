@@ -176,7 +176,7 @@ class ElixirCmdView extends View
         @pre "PATH: #{escape process.env.PATH}"
 
   getCwd: ->
-    atom.project.getPath()
+    atom.project.getPaths()[0]
 
   stop: ->
     # Kill existing process if available

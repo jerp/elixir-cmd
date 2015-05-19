@@ -5,7 +5,7 @@ module.exports =
   elixirCmdView: null
 
   activate: (state) ->
-    return unless fs.existsSync("#{atom.project.getPath()}/mix.exs")
+    return unless fs.existsSync("#{atom.project.getPaths()[0]}/mix.exs")
     @elixirCmdView = new ElixirCmdView(state.elixirCmdViewState)
     atom.workspaceView.on 'core:cancel core:close', (event) =>
       @elixirCmdView?.close()
