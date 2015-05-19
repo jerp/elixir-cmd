@@ -1,4 +1,5 @@
-{View, BufferedProcess, $$} = require 'atom'
+{BufferedProcess} = require 'atom'
+{View, $$} = require 'atom-space-pen-views'
 AnsiFilter = require 'ansi-to-html'
 ansiFilter = new AnsiFilter
 fs = require 'fs'
