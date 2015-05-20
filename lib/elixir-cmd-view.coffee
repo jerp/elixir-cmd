@@ -1,4 +1,5 @@
-{View, BufferedProcess, $$} = require 'atom'
+{BufferedProcess} = require 'atom'
+{View, $$} = require 'atom-space-pen-views'
 AnsiFilter = require 'ansi-to-html'
 ansiFilter = new AnsiFilter
 fs = require 'fs'
@@ -50,11 +51,11 @@ class ElixirCmdView extends View
           class: 'panel-body padded output', outlet: 'output'
 
   initialize: (serializeState, @runOptions) ->
-    # Bind commands
-    atom.workspaceView.command 'elixir-cmd:build', => @buildProject()
-    atom.workspaceView.command 'elixir-cmd:test', => @testProject()
-    atom.workspaceView.command 'elixir-cmd:doc', => @keywordDocumentation()
-    atom.workspaceView.command 'elixir-cmd:kill-process', => @stop()
+    atom.commands.add 'atom-workspace',
+      'elixir-cmd:build': => @buildProject()
+      'elixir-cmd:test': => @testProject()
+      'elixir-cmd:doc': => @keywordDocumentation()
+      'elixir-cmd:kill-process': => @stop()
 
   gotoFile: ({target: target}) ->
     return unless file=target.getAttribute("file")
@@ -128,7 +129,7 @@ class ElixirCmdView extends View
     # Display window and load message
 
     # First run, create view
-    atom.workspaceView.prependToBottom this unless @hasParent()
+    atom.workspace.addBottomPanel {item: this} unless @hasParent()
 
     # Close any existing process and start a new one
     @stop()
@@ -175,7 +176,7 @@ class ElixirCmdView extends View
         @pre "PATH: #{escape process.env.PATH}"
 
   getCwd: ->
-    atom.project.getPath()
+    atom.project.getPaths()[0]
 
   stop: ->
     # Kill existing process if available
