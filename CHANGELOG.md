@@ -1,3 +1,7 @@
+## 0.2.6 - Fixing key binding issue
+* for atom 0.2
+* remove deprecated warnings
+
 ## 0.2.5 - Fixing key binding issue
 * fix key binding issue
 
