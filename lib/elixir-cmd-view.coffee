@@ -32,7 +32,7 @@ escape = (() ->
     else string)()
 
 fileResolve = (filename) ->
-  file = atom.project.resolve(filename)
+  file = atom.project.getDirectories()[0]?.resolve(filename)
   if fs.existsSync(file)
     return file
 
