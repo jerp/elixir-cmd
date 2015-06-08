@@ -1,3 +1,6 @@
+## 0.2.7 - Remove deprecated calls in specs
+* for atom 0.207
+
 ## 0.2.6 - Fixing key binding issue
 * for atom 0.2
 * remove deprecated warnings
