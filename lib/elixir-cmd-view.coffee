@@ -59,11 +59,10 @@ class ElixirCmdView extends View
 
   gotoFile: ({target: target}) ->
     return unless file=target.getAttribute("file")
-    atom.workspace.openSync file
-    return unless (lineno = target.getAttribute("lineno"))
-    editor = atom.workspace.getActiveEditor()
-    editor.moveToTop()
-    editor.moveDown(lineno-1)
+    atom.workspace.open(file).then (editor) ->
+      return unless (lineno = target.getAttribute("lineno"))
+      editor.moveToTop()
+      editor.moveDown(lineno-1)
 
   serialize: ->
 

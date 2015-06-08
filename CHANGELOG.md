@@ -1,3 +1,6 @@
+## 0.2.9 - replace openSync() with open()
+* for atom 0.207
+
 ## 0.2.8 - project.resolve deprecated
 * for atom 0.207
 
