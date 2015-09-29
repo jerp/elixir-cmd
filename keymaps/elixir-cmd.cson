@@ -11,3 +11,8 @@
   'shift-cmd-b': 'elixir-cmd:build'
   'shift-cmd-t': 'elixir-cmd:test'
   'shift-ctrl-h': 'elixir-cmd:doc'
+
+'.platform-linux atom-text-editor':
+  'shift-ctrl-b': 'elixir-cmd:build'
+  'shift-ctrl-t': 'elixir-cmd:test'
+  'shift-ctrl-h': 'elixir-cmd:doc'
